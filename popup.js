@@ -91,7 +91,7 @@ function switchPage(fromPage, toPage) {
 // ==================== 配置管理模块 ====================
 
 function loadConfig() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'saveDir'];
     chrome.storage.local.get(keys, (result) => {
         keys.forEach(key => {
             if (result[key]) {
@@ -104,7 +104,7 @@ function loadConfig() {
 }
 
 function saveConfig() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'saveDir'];
     const data = {};
     keys.forEach(key => {
         const input = document.getElementById(key);
@@ -117,7 +117,7 @@ function saveConfig() {
 }
 
 function saveConfigAndReturn() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'saveDir'];
     const data = {};
     keys.forEach(key => {
         const input = document.getElementById(key);
@@ -726,8 +726,13 @@ function downloadFile(task, saveDir) {
 
 function getConfig() {
     return new Promise(resolve => {
-        const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
+        const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'saveDir'];
         chrome.storage.local.get(keys, (result) => {
+            // 起始脚本号从页面输入框直接读取，不从 storage 读取
+            const startScriptNoInput = document.getElementById('startScriptNo');
+            if (startScriptNoInput) {
+                result.startScriptNo = startScriptNoInput.value.trim();
+            }
             debug('STORAGE_GET_CONFIG', { keys: keys.join(', '), hasData: Object.keys(result).length > 0 });
             resolve(result);
         });
