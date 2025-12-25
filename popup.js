@@ -504,9 +504,9 @@ async function parseRecordsToTasks(token, items, config) {
                 url: linkUrl,
                 filename: nameBase,
                 ext: ext,
-                uniqueId: linkUrl
+                uniqueId: item.record_id  // 使用 record_id 作为唯一标识
             });
-            debug('PARSE_LINK', { filename: nameBase, ext, url: linkUrl.substring(0, 50) + '...' });
+            debug('PARSE_LINK', { filename: nameBase, ext, url: linkUrl.substring(0, 50) + '...', recordId: item.record_id });
         }
 
         // 兼容文本字段类型
@@ -516,9 +516,9 @@ async function parseRecordsToTasks(token, items, config) {
                 url: videoField,
                 filename: nameBase,
                 ext: 'mp4',
-                uniqueId: videoField
+                uniqueId: item.record_id  // 使用 record_id 作为唯一标识
             });
-            debug('PARSE_TEXT', { filename: nameBase, url: videoField.substring(0, 50) + '...' });
+            debug('PARSE_TEXT', { filename: nameBase, url: videoField.substring(0, 50) + '...', recordId: item.record_id });
         }
 
         // 兼容附件类型
@@ -535,9 +535,9 @@ async function parseRecordsToTasks(token, items, config) {
                     fileToken: file.file_token,
                     filename: taskName,
                     ext: ext,
-                    uniqueId: file.file_token
+                    uniqueId: item.record_id  // 使用 record_id 作为唯一标识
                 });
-                debug('PARSE_ATTACHMENT', { filename: taskName, fileToken: maskSensitive(file.file_token), ext });
+                debug('PARSE_ATTACHMENT', { filename: taskName, fileToken: maskSensitive(file.file_token), ext, recordId: item.record_id });
             });
         }
     }
