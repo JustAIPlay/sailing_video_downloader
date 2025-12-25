@@ -767,17 +767,24 @@ function finish() {
     isProcessing = false;
 
     // 根据停止状态显示不同的按钮
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'none';
-
     if (isStopped) {
         // 如果是被停止的，显示重置按钮
+        document.getElementById('startBtn').style.display = 'none';
+        document.getElementById('stopBtn').style.display = 'none';
         document.getElementById('resetBtn').style.display = 'flex';
         document.getElementById('clearHistoryBtn').style.display = 'flex';
         log('⏹️ 下载已停止，点击"重置状态"可重新开始');
     } else {
         // 正常完成，显示开始按钮
         document.getElementById('startBtn').style.display = 'flex';
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('startBtn').innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9L15 9M15 9L9 3M15 9L9 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            开始下载
+        `;
+        document.getElementById('stopBtn').style.display = 'none';
         document.getElementById('resetBtn').style.display = 'none';
         document.getElementById('clearHistoryBtn').style.display = 'flex';
         log('🏁 任务流程结束');
