@@ -43,7 +43,7 @@ window.enableDebug = () => { debugMode = true; window.debugMode = true; console.
 window.disableDebug = () => { debugMode = false; window.debugMode = false; console.log('🔒 调试模式已关闭'); };
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 飞书下载器已加载，在控制台执行 enableDebug() 开启调试模式');
+    console.log('🚀 大航海视频下载神器已加载，在控制台执行 enableDebug() 开启调试模式');
     // 页面切换相关
     initPageNavigation();
     // 加载配置
