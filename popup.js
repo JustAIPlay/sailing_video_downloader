@@ -370,8 +370,8 @@ async function fetchTableRecords(token, config) {
 
 /**
  * 提取脚本号中的数字部分进行比较
- * @param {string} scriptNo - 脚本号，例如 "JQym000053"
- * @returns {number} 提取的数字，例如 53
+ * @param {string} scriptNo - 脚本号，例如 "AITSfym000570"
+ * @returns {number} 提取的数字，例如 570
  */
 function extractScriptNumber(scriptNo) {
     if (!scriptNo) return 0;
@@ -384,6 +384,7 @@ function extractScriptNumber(scriptNo) {
 
 /**
  * 比较两个脚本号，返回 true 表示 scriptNo1 >= scriptNo2
+ * 只比较最后6位的数字序号，忽略前缀
  * @param {string} scriptNo1 - 脚本号1
  * @param {string} scriptNo2 - 脚本号2
  * @returns {boolean}
@@ -444,15 +445,26 @@ async function parseRecordsToTasks(token, items, config) {
             const currentScriptNo = scriptField ? String(scriptField).trim() : '';
 
             if (currentScriptNo) {
+                const currentNum = extractScriptNumber(currentScriptNo);
+                const startNum = extractScriptNumber(config.startScriptNo);
+
                 if (!isScriptNoGreaterOrEqual(currentScriptNo, config.startScriptNo)) {
                     scriptFilteredCount++;
                     debug('PARSE_SKIP_BY_SCRIPT', {
                         scriptNo: currentScriptNo,
+                        scriptNumber: currentNum,
                         startScriptNo: config.startScriptNo,
-                        reason: '脚本号小于起始值'
+                        startNumber: startNum,
+                        reason: `脚本号 ${currentNum} < 起始 ${startNum}`
                     });
                     continue; // 跳过小于起始脚本号的记录
                 }
+
+                debug('PARSE_KEEP_BY_SCRIPT', {
+                    scriptNo: currentScriptNo,
+                    scriptNumber: currentNum,
+                    startNumber: startNum
+                });
             }
         }
 
