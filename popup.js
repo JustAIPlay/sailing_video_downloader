@@ -295,7 +295,8 @@ async function fetchTableRecords(token, config) {
     });
 
     // 只获取需要的字段，减少数据传输量
-    const fields = ['record_id'];
+    // 注意：record_id 是系统自带的，不需要在 field_names 中指定
+    const fields = [];
     if (config.fieldVideo) fields.push(config.fieldVideo);
     if (config.fieldScript) fields.push(config.fieldScript);
 
@@ -304,13 +305,13 @@ async function fetchTableRecords(token, config) {
     let pageCount = 0;
     const pageSize = 100; // 每页100条，平衡性能和效率
 
-    debug('FETCH_RECORDS_FIELDS', { fields: fields.join(', ') });
+    debug('FETCH_RECORDS_FIELDS', { fields: fields.length > 0 ? fields.join(', ') : '(所有字段)' });
 
     do {
         pageCount++;
         let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${config.baseToken}/tables/${config.tableId}/records?page_size=${pageSize}`;
 
-        // 添加字段过滤
+        // 添加字段过滤（只在有字段时才添加）
         if (fields.length > 0) {
             url += `&field_names=${encodeURIComponent(JSON.stringify(fields))}`;
         }
