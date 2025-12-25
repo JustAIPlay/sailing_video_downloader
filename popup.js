@@ -91,7 +91,7 @@ function switchPage(fromPage, toPage) {
 // ==================== 配置管理模块 ====================
 
 function loadConfig() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'fieldName', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
     chrome.storage.local.get(keys, (result) => {
         keys.forEach(key => {
             if (result[key]) {
@@ -104,7 +104,7 @@ function loadConfig() {
 }
 
 function saveConfig() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'fieldName', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
     const data = {};
     keys.forEach(key => {
         const input = document.getElementById(key);
@@ -117,7 +117,7 @@ function saveConfig() {
 }
 
 function saveConfigAndReturn() {
-    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'fieldName', 'saveDir'];
+    const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
     const data = {};
     keys.forEach(key => {
         const input = document.getElementById(key);
@@ -247,20 +247,8 @@ async function startProcess() {
             return;
         }
 
-        // 调试模式限制下载数量
-        let finalTasks = newTasks;
-        if (debugMode && newTasks.length > 20) {
-            finalTasks = newTasks.slice(0, 20);
-            debug('DEBUG_MODE_LIMIT', {
-                originalCount: newTasks.length,
-                limitedCount: 20,
-                message: '调试模式已启用，仅下载前 20 个文件'
-            });
-            log(`🐛 调试模式：仅下载前 20 个文件（共 ${newTasks.length} 个）`);
-        }
-
-        totalTasks = finalTasks.length;
-        downloadQueue = finalTasks;
+        totalTasks = newTasks.length;
+        downloadQueue = newTasks;
         debug('QUEUE_INIT', { totalTasks, concurrency: CONCURRENCY });
         processQueue(config.saveDir);
 
@@ -302,7 +290,6 @@ async function fetchTableRecords(token, config) {
         tableId: maskSensitive(config.tableId),
         fieldVideo: config.fieldVideo,
         fieldScript: config.fieldScript,
-        fieldName: config.fieldName,
         startScriptNo: config.startScriptNo,
         token: maskSensitive(token, 8, 8)
     });
@@ -311,7 +298,6 @@ async function fetchTableRecords(token, config) {
     const fields = ['record_id'];
     if (config.fieldVideo) fields.push(config.fieldVideo);
     if (config.fieldScript) fields.push(config.fieldScript);
-    if (config.fieldName) fields.push(config.fieldName);
 
     const allItems = [];
     let pageToken = '';
@@ -412,7 +398,6 @@ async function parseRecordsToTasks(token, items, config) {
         itemCount: items.length,
         fieldVideo: config.fieldVideo,
         fieldScript: config.fieldScript,
-        fieldName: config.fieldName,
         startScriptNo: config.startScriptNo
     });
 
@@ -434,7 +419,7 @@ async function parseRecordsToTasks(token, items, config) {
     if (items.length > 0) {
         const firstFields = items[0].fields;
         const availableKeys = Object.keys(firstFields);
-        debug('PARSE_FIELDS', { availableKeys, configFieldVideo: config.fieldVideo });
+        debug('PARSE_FIELDS', { availableKeys, configFieldVideo: config.fieldVideo, configFieldScript: config.fieldScript });
         if (!availableKeys.includes(config.fieldVideo)) {
             log(`❌ 找不到字段 "${config.fieldVideo}"`);
             log(`ℹ️ 可用字段: [ ${availableKeys.join(', ')} ]`);
@@ -470,16 +455,16 @@ async function parseRecordsToTasks(token, items, config) {
             }
         }
 
-        // 获取重命名依据
+        // 获取文件名（使用脚本号字段）
         let nameBase = item.record_id;
-        if (config.fieldName && fields[config.fieldName]) {
-            const nameObj = fields[config.fieldName];
-            if (typeof nameObj === 'object' && nameObj.text) {
-                nameBase = nameObj.text;
-            } else if (typeof nameObj === 'object' && Array.isArray(nameObj)) {
-                nameBase = nameObj[0].text || nameObj[0];
+        if (config.fieldScript && fields[config.fieldScript]) {
+            const scriptObj = fields[config.fieldScript];
+            if (typeof scriptObj === 'object' && scriptObj.text) {
+                nameBase = scriptObj.text;
+            } else if (typeof scriptObj === 'object' && Array.isArray(scriptObj)) {
+                nameBase = scriptObj[0].text || scriptObj[0];
             } else {
-                nameBase = String(nameObj);
+                nameBase = String(scriptObj);
             }
         }
 
@@ -728,7 +713,7 @@ function downloadFile(task, saveDir) {
 
 function getConfig() {
     return new Promise(resolve => {
-        const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'fieldName', 'saveDir'];
+        const keys = ['appId', 'appSecret', 'baseToken', 'tableId', 'fieldVideo', 'fieldScript', 'startScriptNo', 'saveDir'];
         chrome.storage.local.get(keys, (result) => {
             debug('STORAGE_GET_CONFIG', { keys: keys.join(', '), hasData: Object.keys(result).length > 0 });
             resolve(result);
