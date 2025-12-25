@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "飞书多维表格视频批量下载助手",
+  "version": "1.0",
+  "description": "从飞书多维表格批量下载视频/附件，支持去重和队列管理。",
+  "permissions": [
+    "downloads",
+    "storage",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://open.feishu.cn/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "打开飞书下载助手",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  }
+}
